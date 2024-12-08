@@ -9,7 +9,7 @@ To establish the skeletal characteristics, we used several techniques, including
 ![Flow_no_flow_design](https://pierrickharnay.github.io/PierrickHarnay_Notebook/images/Flow_no_flow_design.JPG)   
 
 **Protocol linear extension (alizarin) used:** 
-![20240912_Growth_coral_expe.pdf](https://pierrickharnay.github.io/PierrickHarnay_Notebook/images/20240912_Growth_coral_expe.pdf) 
+![20240912_Growth_coral_expe.JPG](https://pierrickharnay.github.io/PierrickHarnay_Notebook/images/20240912_Growth_coral_expe.JPG) 
 
 
  
