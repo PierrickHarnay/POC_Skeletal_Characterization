@@ -1,0 +1,69 @@
+---
+title: "Bulk_Density"
+author: "Harnay"
+date: "2025-01-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Libraries
+```{r}
+library(tidyverse)
+
+```
+
+Load data and metadata
+```{r}
+#load wax data
+wax.data <- read.csv("Data/test_bulk_density_data.csv", header=TRUE)
+
+species.id <- read.csv("Data/test_metadata.csv", header=TRUE)
+species.id$Species <- factor(species.id$Species)
+
+```
+
+#Calculate surface area (Volume enclosed) using the standard curve
+```{r}
+
+wax.data <- wax.data %>%
+  mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
+  mutate(Bulk.Density = DW.clean.g/Vol.enc)
+
+#check the range of bulk density values
+#1.44 - 2.22 reported 10.7717/peerj.3191
+range(wax.data$Bulk.Density)
+boxplot(wax.data$Bulk.Density)
+hist(wax.data$Bulk.Density)
+range(wax.data$Bulk.Density)
+
+```
+
+Set species colors
+```{r}
+
+
+species_colors <- c("P. grandis" = "#56B4E9", "P. verrucosa" = "#E69F00",
+                    "P. meandrina" = "#0072B2", "P. effusa" = "#009E73",
+                    "P. acuta"= "#e63946")
+
+
+```
+
+Plot by species and site
+```{r}
+data <- left_join(wax.data, species.id, by= "fragment_ID")
+
+bulk.density.plot <- data %>%
+  ggplot(aes(y=Bulk.Density, x=Site, color = Species), group=Size.Class)+
+  geom_point(size = 1)+
+  geom_jitter(width = 0.2) +  
+  scale_color_manual(values = species_colors)+
+  facet_wrap(Size.Class ~ Species) + 
+  theme_bw()
+
+bulk.density.plot
+
+```
