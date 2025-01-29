@@ -19,14 +19,35 @@ Load data and metadata
 ```{r}
 #load wax data
 wax.data <- read.csv("Data/test_bulk_density_data.csv", header=TRUE)
+colnames(wax.data) <- c("Sample.ID", "DW.clean.g", "DW.wax.g", "BW.wax.g", "Temperature.C", "Notes")
+wax.data$Sample.ID <- as.character(wax.data$Sample.ID)
 
-species.id <- read.csv("Data/test_metadata.csv", header=TRUE)
+species.id <- read.csv("Data/test_Haplotype_data.csv", header=TRUE)
 species.id$Species <- factor(species.id$Species)
+species.id$Sample.ID <- as.character(species.id$Sample.ID)
+
+metadata <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_ID_RA_list.csv", header=TRUE) %>%
+  select(c("Number", "Stage", "Timing", "Site", "Transect"))
+
+colnames(metadata) <- c("Sample.ID", "Stage", "Timing", "Site", "Transect")
+metadata$Sample.ID <- as.character(metadata$Sample.ID)
 
 ```
 
 #Calculate surface area (Volume enclosed) using the standard curve
 ```{r}
+
+#View the range of DW.clean.g
+range(wax.data$DW.clean.g)
+boxplot(wax.data$DW.clean.g)
+hist(wax.data$DW.clean.g)
+max(wax.data$DW.clean.g)
+
+#View the range of DW.wax.g
+range(wax.data$DW.wax.g)
+boxplot(wax.data$DW.wax.g)
+hist(wax.data$DW.wax.g)
+max(wax.data$DW.wax.g)
 
 wax.data <- wax.data %>%
   mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
@@ -37,32 +58,86 @@ wax.data <- wax.data %>%
 range(wax.data$Bulk.Density)
 boxplot(wax.data$Bulk.Density)
 hist(wax.data$Bulk.Density)
-range(wax.data$Bulk.Density)
+max(wax.data$Bulk.Density)
 
 ```
 
 Set species colors
 ```{r}
+# 
+# species_colors <- c("P. grandis" = "#56B4E9", "P. verrucosa" = "#E69F00",
+#                     "P. meandrina P. grandis" = "#0072B2","P. meandrina" = "pink", 
+#                     "P. effusa" = "#009E73","P. acuta"= "#e63946")
+# 
+
+species_colors <- c("P. tuahiniensis" = "#D55E00",
+                    "P. meandrina" = "pink",
+                    "P. meandrina P. grandis" = "#0072B2",
+                    "P. verrucosa" = "#E69F00",
+                    "P. grandis" = "#56B4E9",
+                    "P. effusa" = "#009E73",
+                    "P. acuta" = "#e63946")
 
 
-species_colors <- c("P. grandis" = "#56B4E9", "P. verrucosa" = "#E69F00",
-                    "P. meandrina" = "#0072B2", "P. effusa" = "#009E73",
-                    "P. acuta"= "#e63946")
 
 
 ```
 
 Plot by species and site
 ```{r}
-data <- left_join(wax.data, species.id, by= "fragment_ID")
+data <- left_join(wax.data, species.id, by= "Sample.ID")
+data <- left_join(data, metadata, by= "Sample.ID")
+
+data$Species <- factor(data$Species, levels = c("P. tuahiniensis", 
+                                                "P. meandrina", 
+                                                "P. meandrina P. grandis", 
+                                                "P. verrucosa", 
+                                                "P. grandis", 
+                                                "P. effusa", 
+                                                "P. acuta"))
+
+str(data)
 
 bulk.density.plot <- data %>%
-  ggplot(aes(y=Bulk.Density, x=Site, color = Species), group=Size.Class)+
-  geom_point(size = 1)+
-  geom_jitter(width = 0.2) +  
-  scale_color_manual(values = species_colors)+
-  facet_wrap(Size.Class ~ Species) + 
-  theme_bw()
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point() +  # Plot the data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  facet_wrap(~ Species) +  # Facet by Species
+  theme_bw()  
+
+bulk.density.plot
+
+```
+
+```{r}
+
+#remove max outlier
+filtered_data <- data %>%
+  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE))
+
+bulk.density.plot <- filtered_data %>%
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point() +  # Plot the data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  facet_wrap(~ Species) +  # Facet by Species
+  theme_bw()  
+
+bulk.density.plot
+
+
+```
+View a single site
+```{r}
+#remove max outlier
+filtered_data <- data %>%
+  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+  filter(Site == "S14")
+
+bulk.density.plot <- filtered_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point() +  # Plot the data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  theme_bw()  
 
 bulk.density.plot
 
