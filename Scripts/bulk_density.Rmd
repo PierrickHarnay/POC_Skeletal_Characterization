@@ -64,11 +64,6 @@ max(wax.data$Bulk.Density)
 
 Set species colors
 ```{r}
-# 
-# species_colors <- c("P. grandis" = "#56B4E9", "P. verrucosa" = "#E69F00",
-#                     "P. meandrina P. grandis" = "#0072B2","P. meandrina" = "pink", 
-#                     "P. effusa" = "#009E73","P. acuta"= "#e63946")
-# 
 
 species_colors <- c("P. tuahiniensis" = "#D55E00",
                     "P. meandrina" = "pink",
@@ -77,9 +72,6 @@ species_colors <- c("P. tuahiniensis" = "#D55E00",
                     "P. grandis" = "#56B4E9",
                     "P. effusa" = "#009E73",
                     "P. acuta" = "#e63946")
-
-
-
 
 ```
 
@@ -137,7 +129,11 @@ bulk.density.plot <- filtered_data %>%
   ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
-  theme_bw()  
+  theme_bw()+
+  labs(title="Site 14",
+    x = "Species",
+    y = "Bulk Density g/cm2"
+  )
 
 bulk.density.plot
 
