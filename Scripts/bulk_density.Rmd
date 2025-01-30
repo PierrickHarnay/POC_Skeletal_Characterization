@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Load Libraries
 ```{r}
 library(tidyverse)
+library(gridExtra)
 
 ```
 
@@ -90,14 +91,18 @@ data$Species <- factor(data$Species, levels = c("P. tuahiniensis",
 
 str(data)
 
-bulk.density.plot <- data %>%
+bulk.density.plot.raw <- data %>%
   ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
   facet_wrap(~ Species) +  # Facet by Species
-  theme_bw()  
+  theme_bw()+
+  labs(title="All Raw Data",
+    x = "Species",
+    y = "Bulk Density g/cm2"
+  )  
 
-bulk.density.plot
+bulk.density.plot.raw
 
 ```
 
@@ -107,14 +112,18 @@ bulk.density.plot
 filtered_data <- data %>%
   filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE))
 
-bulk.density.plot <- filtered_data %>%
+bulk.density.plot.outlier.removed <- filtered_data %>%
   ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
   facet_wrap(~ Species) +  # Facet by Species
-  theme_bw()  
+  theme_bw()+
+  labs(title="Outlier Removed",
+    x = "Species",
+    y = "Bulk Density g/cm2"
+  )  
 
-bulk.density.plot
+bulk.density.plot.outlier.removed
 
 
 ```
@@ -125,16 +134,27 @@ filtered_data <- data %>%
   filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
   filter(Site == "S14")
 
-bulk.density.plot <- filtered_data %>%
+bulk.density.plot.S14 <- filtered_data %>%
   ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
   theme_bw()+
-  labs(title="Site 14",
+  labs(title="Single Site - Site 14",
     x = "Species",
     y = "Bulk Density g/cm2"
   )
 
-bulk.density.plot
+bulk.density.plot.S14
+
+```
+
+plot to pdf
+```{r}
+# Save the plots to a PDF in one column
+pdf("Output/BW.plots.pdf", height = 12, width = 6) # Set dimensions for the PDF
+grid.arrange(bulk.density.plot.raw,
+             bulk.density.plot.outlier.removed,
+             bulk.density.plot.S14, ncol = 1) # Arrange in 1 column
+dev.off() # Close the PDF device
 
 ```
