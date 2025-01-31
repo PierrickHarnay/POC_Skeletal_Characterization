@@ -42,13 +42,11 @@ metadata$Sample.ID <- as.character(metadata$Sample.ID)
 range(wax.data$DW.clean.g)
 boxplot(wax.data$DW.clean.g)
 hist(wax.data$DW.clean.g)
-max(wax.data$DW.clean.g)
 
 #View the range of DW.wax.g
 range(wax.data$DW.wax.g)
 boxplot(wax.data$DW.wax.g)
 hist(wax.data$DW.wax.g)
-max(wax.data$DW.wax.g)
 
 wax.data <- wax.data %>%
   mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
@@ -59,7 +57,6 @@ wax.data <- wax.data %>%
 range(wax.data$Bulk.Density)
 boxplot(wax.data$Bulk.Density)
 hist(wax.data$Bulk.Density)
-max(wax.data$Bulk.Density)
 
 ```
 
@@ -73,6 +70,8 @@ species_colors <- c("P. tuahiniensis" = "#D55E00",
                     "P. grandis" = "#56B4E9",
                     "P. effusa" = "#009E73",
                     "P. acuta" = "#e63946")
+
+
 
 ```
 
@@ -90,6 +89,17 @@ data$Species <- factor(data$Species, levels = c("P. tuahiniensis",
                                                 "P. acuta"))
 
 str(data)
+
+#set site order
+site_order <- c("S1","S2","S3","S4","S5","S6",
+                "S9","S11","S12","S14","S15","S18")  
+
+# Convert Site column to a factor with the custom order
+data$Site <- factor(data$Site, levels = site_order)
+
+# Check the structure to confirm the changes
+str(data)
+
 
 bulk.density.plot.raw <- data %>%
   ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
@@ -125,16 +135,30 @@ bulk.density.plot.outlier.removed <- filtered_data %>%
 
 bulk.density.plot.outlier.removed
 
+bulk.density.plot.outlier.removed.species <- filtered_data %>%
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species), group=Species) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point(position = position_dodge(width = 0.9), size = 1, alpha=0.6) +
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  #facet_wrap(~ Species) +  # Facet by Species
+  theme_classic()+
+  labs(title="Outlier Removed",
+    x = "Species",
+    y = "Bulk Density g/cm2"
+  )  
+
+bulk.density.plot.outlier.removed.species
+
 
 ```
 View a single site
 ```{r}
 #remove max outlier
-filtered_data <- data %>%
+site_filtered_data <- data %>%
   filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
-  filter(Site == "S14")
+  filter(Site == "S14") %>%
+  filter(Species != "NA")
 
-bulk.density.plot.S14 <- filtered_data %>%
+bulk.density.plot.S14 <- site_filtered_data %>%
   ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
