@@ -135,19 +135,70 @@ bulk.density.plot.outlier.removed <- filtered_data %>%
 
 bulk.density.plot.outlier.removed
 
+
 bulk.density.plot.outlier.removed.species <- filtered_data %>%
-  ggplot(aes(x = Site, y = Bulk.Density, color = Species), group=Species) +  # Add 'color = Species' to map colors to the Species variable
-  geom_point(position = position_dodge(width = 0.9), size = 1, alpha=0.6) +
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species, group = Species)) +  # Map color to Species
+  geom_point(position = position_dodge(width = 0.9), size = 1, alpha = 0.2) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 3,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9)  # Dodge means to align with the individual points
+  ) + 
+  geom_line(
+    stat = "summary",  # Use the summary statistics (mean) to plot the line
+    fun = "mean",  # Line connects the means
+    aes(group = Species, color = Species),  # Ensure the line connects the means of each species
+    size = 1,  # Thickness of the line
+  position = position_dodge(width = 0.9)) +
+  scale_color_manual(values = species_colors) +  # Use your manual color palette for the species
+  theme_classic() +  # Classic theme for cleaner look
+  labs(
+    title = "Outlier Removed",
+    x = "Site",
+    y = "Bulk Density g/cm²"
+  )
+
+# Display the plot
+#bulk.density.plot.outlier.removed.species
+
+```
+View a single site
+```{r}
+#remove max outlier
+site_filtered_data <- data %>%
+  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+  filter(Site == "S2") %>%
+  filter(Species != "NA")
+
+bulk.density.plot.S2 <- site_filtered_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density, color = Species, group = Species)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, alpha = 0.3) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9)  # Dodge means to align with the individual points
+  )+
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
-  #facet_wrap(~ Species) +  # Facet by Species
-  theme_classic()+
-  labs(title="Outlier Removed",
+  geom_line(
+    stat = "summary",  # Use the summary statistics (mean) to plot the line
+    fun = "mean",  # Line connects the means
+    aes(group = Species, color = Species),  # Ensure the line connects the means of each species
+    size = 1,  # Thickness of the line
+  position = position_dodge(width = 0.9)) +
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  labs(title="Single Site - Site 2",
     x = "Species",
     y = "Bulk Density g/cm2"
-  )  
+  )
 
-bulk.density.plot.outlier.removed.species
-
+bulk.density.plot.S2
 
 ```
 View a single site
@@ -159,9 +210,24 @@ site_filtered_data <- data %>%
   filter(Species != "NA")
 
 bulk.density.plot.S14 <- site_filtered_data %>%
-  ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
-  geom_point() +  # Plot the data points
+  ggplot(aes(x = Species, y = Bulk.Density, color = Species, group = Species)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, alpha = 0.3) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9)  # Dodge means to align with the individual points
+  )+
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  geom_line(
+    stat = "summary",  # Use the summary statistics (mean) to plot the line
+    fun = "mean",  # Line connects the means
+    aes(group = Species, color = Species),  # Ensure the line connects the means of each species
+    size = 1,  # Thickness of the line
+  position = position_dodge(width = 0.9)) +
+  ylim(1.0, 2.4)+
   theme_bw()+
   labs(title="Single Site - Site 14",
     x = "Species",
@@ -171,14 +237,59 @@ bulk.density.plot.S14 <- site_filtered_data %>%
 bulk.density.plot.S14
 
 ```
+View a single site
+```{r}
+#remove max outlier
+site_filtered_data <- data %>%
+  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+  filter(Site == "S15") %>%
+  filter(Species != "NA")
+
+bulk.density.plot.S15 <- site_filtered_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density, color = Species, group = Species)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, alpha = 0.3) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9)  # Dodge means to align with the individual points
+  )+
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  geom_line(
+    stat = "summary",  # Use the summary statistics (mean) to plot the line
+    fun = "mean",  # Line connects the means
+    aes(group = Species, color = Species),  # Ensure the line connects the means of each species
+    size = 1,  # Thickness of the line
+  position = position_dodge(width = 0.9)) +
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  labs(title="Single Site - Site 15",
+    x = "Species",
+    y = "Bulk Density g/cm2"
+  )
+
+bulk.density.plot.S15
+
+```
 
 plot to pdf
 ```{r}
 # Save the plots to a PDF in one column
-pdf("Output/BW.plots.pdf", height = 12, width = 6) # Set dimensions for the PDF
+pdf("Output/BW.plots.pdf", height = 16, width = 10) # Set dimensions for the PDF
 grid.arrange(bulk.density.plot.raw,
              bulk.density.plot.outlier.removed,
-             bulk.density.plot.S14, ncol = 1) # Arrange in 1 column
+             bulk.density.plot.outlier.removed.species,
+            ncol = 1) # Arrange in 1 column
+dev.off() # Close the PDF device
+
+# Save the plots to a PDF in one column
+pdf("Output/BDSite.plots.pdf", height = 12, width = 10) # Set dimensions for the PDF
+grid.arrange(bulk.density.plot.S2,
+             bulk.density.plot.S14,
+             bulk.density.plot.S15,
+             ncol = 1) # Arrange in 1 column
 dev.off() # Close the PDF device
 
 ```
