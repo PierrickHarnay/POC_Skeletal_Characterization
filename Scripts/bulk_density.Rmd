@@ -13,6 +13,12 @@ Load Libraries
 ```{r}
 library(tidyverse)
 library(gridExtra)
+library(cowplot)
+library(sf)
+library(ggspatial)
+library(ggmap)
+library(ggsn)
+library(patchwork)
 
 ```
 
@@ -194,8 +200,11 @@ bulk.density.plot.S1 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 1",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S1",
     y = "Bulk Density g/cm2"
   )
 
@@ -232,8 +241,11 @@ bulk.density.plot.S2 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 2",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S2",
     y = "Bulk Density g/cm2"
   )
 
@@ -268,8 +280,11 @@ bulk.density.plot.S3 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 3",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S3",
     y = "Bulk Density g/cm2"
   )
 
@@ -304,8 +319,11 @@ bulk.density.plot.S4 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 4",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S4",
     y = "Bulk Density g/cm2"
   )
 
@@ -340,8 +358,11 @@ bulk.density.plot.S5 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 5",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S5",
     y = "Bulk Density g/cm2"
   )
 
@@ -376,8 +397,11 @@ bulk.density.plot.S6 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 6",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S6",
     y = "Bulk Density g/cm2"
   )
 
@@ -412,8 +436,11 @@ bulk.density.plot.S9 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 9",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S9",
     y = "Bulk Density g/cm2"
   )
 
@@ -449,8 +476,11 @@ bulk.density.plot.S11 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 11",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S11",
     y = "Bulk Density g/cm2"
   )
 
@@ -486,8 +516,11 @@ bulk.density.plot.S12 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 12",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S12",
     y = "Bulk Density g/cm2"
   )
 
@@ -523,8 +556,11 @@ bulk.density.plot.S14 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 14",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S14",
     y = "Bulk Density g/cm2"
   )
 
@@ -559,8 +595,11 @@ bulk.density.plot.S15 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 15",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S15",
     y = "Bulk Density g/cm2"
   )
 
@@ -596,8 +635,11 @@ bulk.density.plot.S18 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  labs(title="Single Site - Site 18",
-    x = "Species",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="S18",
     y = "Bulk Density g/cm2"
   )
 
@@ -623,7 +665,91 @@ grid.arrange(bulk.density.plot.S1,bulk.density.plot.S2,
              bulk.density.plot.S9,bulk.density.plot.S11,
              bulk.density.plot.S12,bulk.density.plot.S14,
              bulk.density.plot.S15, bulk.density.plot.S18,
-             ncol = 2) # Arrange in 1 column
+             ncol = 3) # Arrange in 1 column
 dev.off() # Close the PDF device
+
+```
+
+ Make the Moorea Island Map
+```{r }
+register_google(key = "") ### use your own API
+
+# location
+Moorea<-data.frame(lon = -149.83246425684064, lat = -17.531092816791094)
+
+#Map base
+M1<-get_map(Moorea,zoom = 12, maptype = 'satellite')
+
+bbx <- c(left=-149.802,bottom= -17.480,right=-149.805,top=-17.475)
+x <- c(bbx["left"], bbx["left"], bbx["right"], bbx["right"])
+y <- c(bbx["bottom"], bbx["top"], bbx["top"], bbx["bottom"])
+df <- data.frame(x, y)
+
+Mooreamap<-ggmap(M1)+
+  scalebar(x.min = -149.90, x.max = -149.05,y.min = -17.4, y.max = -18.0,
+           model = 'WGS84', box.fill = c("yellow", "white"), st.color = "white",
+           location =  "bottomright", transform = TRUE, dist_unit = "km", dist = 10) +
+  #geom_polygon(aes(x=x, y=y), data=df, color="yellow", fill=NA) +
+  #geom_text(data = isledata, aes(x=Long, y=Lat, label=island),vjust =0,size=4, color = 'yellow')+
+  ggtitle('A')+
+  xlab("")+
+  ylab("")
+
+Mooreamap
+
+```
+
+# Make Colony and Transect Map
+```{r}
+sitedata <- read.csv("Data/transect.site.coords.csv")
+str(sitedata)
+
+labels <- sitedata$site.name
+
+#Map base
+#M3<-get_map(NS,zoom = 18, maptype = 'satellite')
+
+MooreaSitemap<-ggmap(M1)+
+  scalebar(x.min = -149.75, x.max = -149.79,y.min = -17.60, y.max = -17.58,
+           model = 'WGS84', box.fill = c("white", "white"), st.color = "white",st.dist=0.3,
+           location =  "bottomright", transform = TRUE, dist_unit = "km", dist = 1) +
+  geom_point(data = sitedata, mapping = aes(x=long, y=lat), size=2, color="yellow")+
+  geom_text(data = sitedata, aes(x=long, y=lat, label=site.name),vjust = -2,size=3, color="yellow")+
+  #geom_line(data = transects, mapping = aes(x=long, y=lat,group=grouping), size=0.5, color="black")+
+  #ggtitle('C')+
+  xlab("")+
+  ylab("")
+
+MooreaSitemap
+```
+
+spatial mapping of plots around the island map
+```{r}
+
+empty_plot <- ggplot() + theme_void()
+
+legend_plot <- ggplot(data = data.frame(x = 1, y = 1, group = names(species_colors)), aes(x = x, y = y, color = group)) +
+  geom_point(size = 0) +  # No actual points, just to display the legend
+  scale_color_manual(values = species_colors) +  # Use your custom color palette
+  theme_void() +  # Remove axes and background
+  theme(legend.title = element_blank()) +  # Remove legend title
+  guides(color = guide_legend(override.aes = list(size = 5)))
+legend_plot
+
+grid_layout <- plot_grid(
+  bulk.density.plot.S1,bulk.density.plot.S2,bulk.density.plot.S3,bulk.density.plot.S4,bulk.density.plot.S5,
+  bulk.density.plot.S18,empty_plot,empty_plot,empty_plot,bulk.density.plot.S6,
+  bulk.density.plot.S15,empty_plot,empty_plot,empty_plot,bulk.density.plot.S9,
+  bulk.density.plot.S14, empty_plot,empty_plot,empty_plot,bulk.density.plot.S11,
+  empty_plot,empty_plot, bulk.density.plot.S12,empty_plot,legend_plot,
+  ncol = 5, nrow = 5
+)
+
+final_grid_with_map <- grid_layout + 
+  draw_plot(MooreaSitemap, x = 0.2, y = 0.2, width = 0.6, height = 0.6)  # Adjust size and position
+final_grid_with_map 
+
+ggsave("Output/grid_layout.pdf", final_grid_with_map, width = 10, height = 10)
+
 
 ```
