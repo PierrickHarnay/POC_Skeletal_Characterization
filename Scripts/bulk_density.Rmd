@@ -176,11 +176,32 @@ bulk.density.plot.outlier.removed.species <- filtered_data %>%
 #bulk.density.plot.outlier.removed.species
 
 ```
+All species by site
+```{r}
+bulk.density.site <- filtered_data %>%
+  ggplot(aes(x = Site, y = Bulk.Density)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, color="gray", alpha = 0.3) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    position = position_dodge(width = 0.9))+  # Dodge means to align with the individual points
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  theme(legend.position ="none")+
+  labs(title="All Sites, All Species",
+       y = "Bulk Density g/cm2"
+  )
+
+bulk.density.site
+
+```
+
 View a single site S1
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S1") %>%
   filter(Species != "NA")
 
@@ -220,8 +241,7 @@ bulk.density.plot.S1
 View a single site S2
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S2") %>%
   filter(Species != "NA")
 
@@ -259,8 +279,7 @@ bulk.density.plot.S2
 View a single site S3
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S3") %>%
   filter(Species != "NA")
 
@@ -298,8 +317,7 @@ bulk.density.plot.S3
 View a single site S4
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S4") %>%
   filter(Species != "NA")
 
@@ -337,8 +355,7 @@ bulk.density.plot.S4
 View a single site S5
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S5") %>%
   filter(Species != "NA")
 
@@ -376,8 +393,7 @@ bulk.density.plot.S5
 View a single site S6
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S6") %>%
   filter(Species != "NA")
 
@@ -415,8 +431,7 @@ bulk.density.plot.S6
 View a single site S9
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S9") %>%
   filter(Species != "NA")
 
@@ -455,8 +470,7 @@ bulk.density.plot.S9
 View a single site S11
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S11") %>%
   filter(Species != "NA")
 
@@ -495,8 +509,7 @@ bulk.density.plot.S11
 View a single site S12
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S12") %>%
   filter(Species != "NA")
 
@@ -535,8 +548,7 @@ bulk.density.plot.S12
 View a single site S14
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S14") %>%
   filter(Species != "NA")
 
@@ -574,8 +586,7 @@ bulk.density.plot.S14
 View a single site S15
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S15") %>%
   filter(Species != "NA")
 
@@ -614,8 +625,7 @@ bulk.density.plot.S15
 View a single site S18
 ```{r}
 #remove max outlier
-site_filtered_data <- data %>%
-  filter(Bulk.Density != max(data$Bulk.Density, na.rm = TRUE)) %>%
+site_filtered_data <- filtered_data %>%
   filter(Site == "S18") %>%
   filter(Species != "NA")
 
@@ -750,7 +760,8 @@ grid_layout <- plot_grid(
 )
 
 final_grid_with_map <- grid_layout + 
-  draw_plot(MooreaSitemap, x = 0.2, y = 0.2, width = 0.6, height = 0.6)  # Adjust size and position
+  draw_plot(MooreaSitemap, x = 0.2, y = 0.2, width = 0.6, height = 0.6)+  
+  draw_plot(bulk.density.site, x = 0.001, y = 0.001, width = 0.36, height = 0.2)
 final_grid_with_map 
 
 ggsave("Output/grid_layout.pdf", final_grid_with_map, width = 10, height = 10)
