@@ -121,7 +121,7 @@ bulk.density.plot.raw <- data %>%
   theme_bw()+
   labs(title="All Raw Data",
     x = "Species",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )  
 
 bulk.density.plot.raw
@@ -143,7 +143,7 @@ bulk.density.plot.outlier.removed <- filtered_data %>%
   theme_bw()+
   labs(title="Outlier Removed",
     x = "Species",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )  
 
 bulk.density.plot.outlier.removed
@@ -178,6 +178,7 @@ bulk.density.plot.outlier.removed.species <- filtered_data %>%
 #bulk.density.plot.outlier.removed.species
 
 ```
+
 All species by site
 ```{r}
 bulk.density.site <- filtered_data %>%
@@ -193,12 +194,37 @@ bulk.density.site <- filtered_data %>%
   theme_bw()+
   theme(legend.position ="none")+
   labs(title="All Sites, All Species",
-       y = "Bulk Density g/cm2"
+       y = "Bulk Density g/cm3"
   )
 
 bulk.density.site
 
 ```
+
+All sites by Species
+```{r}
+bulk.density.species <- filtered_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, color="gray", alpha = 0.3) +  # Plot the individual data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9))+  # Dodge means to align with the individual points
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  theme(legend.position ="none")+
+  labs(title="All Species, All Sites",
+       y = "Bulk Density g/cm3"
+  )
+
+bulk.density.species
+
+```
+
 
 View a single site S1
 ```{r}
@@ -232,7 +258,7 @@ bulk.density.plot.S1 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S1",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S1
@@ -272,7 +298,7 @@ bulk.density.plot.S2 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S2",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S2
@@ -310,7 +336,7 @@ bulk.density.plot.S3 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S3",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S3
@@ -348,7 +374,7 @@ bulk.density.plot.S4 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S4",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S4
@@ -386,7 +412,7 @@ bulk.density.plot.S5 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S5",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S5
@@ -424,7 +450,7 @@ bulk.density.plot.S6 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S6",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S6
@@ -462,7 +488,7 @@ bulk.density.plot.S9 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S9",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S9
@@ -501,7 +527,7 @@ bulk.density.plot.S11 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S11",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S11
@@ -540,7 +566,7 @@ bulk.density.plot.S12 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S12",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S12
@@ -579,7 +605,7 @@ bulk.density.plot.S14 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S14",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S14
@@ -617,7 +643,7 @@ bulk.density.plot.S15 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S15",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S15
@@ -656,7 +682,7 @@ bulk.density.plot.S18 <- site_filtered_data %>%
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
   labs(title="S18",
-    y = "Bulk Density g/cm2"
+    y = "Bulk Density g/cm3"
   )
 
 bulk.density.plot.S18
