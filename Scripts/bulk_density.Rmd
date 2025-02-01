@@ -58,6 +58,8 @@ range(wax.data$DW.wax.g)
 boxplot(wax.data$DW.wax.g)
 hist(wax.data$DW.wax.g)
 
+str(wax.data)
+
 wax.data <- wax.data %>%
   mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
   mutate(Bulk.Density = DW.clean.g/Vol.enc)
