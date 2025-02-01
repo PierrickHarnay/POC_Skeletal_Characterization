@@ -30,7 +30,8 @@ colnames(wax.data) <- c("Sample.ID", "DW.clean.g", "DW.wax.g", "BW.wax.g", "Temp
 wax.data$Sample.ID <- as.character(wax.data$Sample.ID)
 wax.data <- na.omit(wax.data)
 nrow(wax.data)==length(unique(wax.data$Sample.ID))
-
+duplicated_names <- wax.data[duplicated(wax.data$Sample.ID), ]
+print(duplicated_names)
 
 species.id <- read.csv("Data/test_Haplotype_data.csv", header=TRUE)
 species.id$Species <- factor(species.id$Species)
@@ -127,7 +128,7 @@ bulk.density.plot.raw
 
 ```{r}
 
-#remove outliers above 2.93
+#remove outliers above 2.93 and below 0
 filtered_data <- data %>%
   filter(Bulk.Density <2.93, na.rm = TRUE) %>%
   filter(Bulk.Density >0, na.rm = TRUE)
@@ -675,7 +676,7 @@ dev.off() # Close the PDF device
 
  Make the Moorea Island Map
 ```{r }
-register_google(key = "") ### use your own API
+register_google(key = "AIzaSyAJHWQg-KMSzffFNWaO1zAakoBz-klFhIg") ### use your own API
 
 # location
 Moorea<-data.frame(lon = -149.83246425684064, lat = -17.531092816791094)
