@@ -26,7 +26,7 @@ Load data and metadata
 ```{r}
 #load wax data
 wax.data <- read.csv("Data/test_bulk_density_data.csv", header=TRUE)
-colnames(wax.data) <- c("Sample.ID", "DW.clean.g", "DW.wax.g", "BW.wax.g", "Temperature.C", "Notes")
+colnames(wax.data) <- c("Sample.ID", "DW.clean.g", "DW.wax.g", "BW.wax.g", "Temperature.C", "Page.Num","Notes")
 wax.data$Sample.ID <- as.character(wax.data$Sample.ID)
 wax.data <- na.omit(wax.data)
 nrow(wax.data)==length(unique(wax.data$Sample.ID))
@@ -71,6 +71,16 @@ boxplot(wax.data$Bulk.Density)
 hist(wax.data$Bulk.Density)
 
 ```
+
+Check data entry for values less that 1.4
+```{r}
+
+QC.Checks <- wax.data %>%
+  filter(Bulk.Density <1.4, na.rm = TRUE)
+
+
+```
+
 
 Set species colors
 ```{r}
