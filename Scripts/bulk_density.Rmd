@@ -72,12 +72,26 @@ hist(wax.data$Bulk.Density)
 
 ```
 
+Check relationship between initial weight and bulk density to see if there are artifacts of starting small (e.g., balance resolution, user artifacts)
+
+```{r}
+wax.data %>% 
+  ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
+  geom_point()
+
+```
+
 Check data entry for values less that 1.4
 ```{r}
 
 QC.Checks <- wax.data %>%
   filter(Bulk.Density <1.4, na.rm = TRUE)
 
+#checked and confirmed all entries are correct
+
+QC.Checks %>% 
+  ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
+  geom_point()
 
 ```
 
