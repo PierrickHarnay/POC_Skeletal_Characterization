@@ -43,39 +43,42 @@ metadata <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Dat
 colnames(metadata) <- c("Sample.ID", "Stage", "Timing", "Site", "Transect")
 metadata$Sample.ID <- as.character(metadata$Sample.ID)
 
+data <- left_join(wax.data, species.id, by= "Sample.ID")
+data <- left_join(data, metadata, by= "Sample.ID")
+
 ```
 
 #Calculate surface area (Volume enclosed) using the standard curve
 ```{r}
 
 #View the range of DW.clean.g
-range(wax.data$DW.clean.g)
-boxplot(wax.data$DW.clean.g)
-hist(wax.data$DW.clean.g)
+range(data$DW.clean.g)
+boxplot(data$DW.clean.g)
+hist(data$DW.clean.g)
 
 #View the range of DW.wax.g
-range(wax.data$DW.wax.g)
-boxplot(wax.data$DW.wax.g)
-hist(wax.data$DW.wax.g)
+range(data$DW.wax.g)
+boxplot(data$DW.wax.g)
+hist(data$DW.wax.g)
 
-str(wax.data)
+str(data)
 
-wax.data <- wax.data %>%
+data <- data %>%
   mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
   mutate(Bulk.Density = DW.clean.g/Vol.enc)
 
 #check the range of bulk density values
 #1.44 - 2.22 reported 10.7717/peerj.3191
-range(wax.data$Bulk.Density)
-boxplot(wax.data$Bulk.Density)
-hist(wax.data$Bulk.Density)
+range(data$Bulk.Density)
+boxplot(data$Bulk.Density)
+hist(data$Bulk.Density)
 
 ```
 
 Check relationship between initial weight and bulk density to see if there are artifacts of starting small (e.g., balance resolution, user artifacts)
 
 ```{r}
-wax.data %>% 
+data %>% 
   ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
   geom_point()
 
@@ -84,13 +87,17 @@ wax.data %>%
 Check data entry for values less that 1.4
 ```{r}
 
-QC.Checks <- wax.data %>%
+QC.Checks <- data %>%
   filter(Bulk.Density <1.4, na.rm = TRUE)
 
 #checked and confirmed all entries are correct
 
 QC.Checks %>% 
   ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
+  geom_point()
+
+QC.Checks %>% 
+  ggplot(aes(x=Site, y=Bulk.Density))+
   geom_point()
 
 ```
@@ -113,8 +120,6 @@ species_colors <- c("P. tuahiniensis" = "#D55E00",
 
 Plot by species and site
 ```{r}
-data <- left_join(wax.data, species.id, by= "Sample.ID")
-data <- left_join(data, metadata, by= "Sample.ID")
 
 data$Species <- factor(data$Species, levels = c("P. tuahiniensis", 
                                                 "P. meandrina", 
@@ -125,6 +130,14 @@ data$Species <- factor(data$Species, levels = c("P. tuahiniensis",
                                                 "P. acuta"))
 
 str(data)
+
+#set species order
+species_order <- c("P. meandrina","P. meandrina P. grandis", "P. grandis",
+                   "P. verrucosa","P. tuahiniensis", "P. effusa","P. acuta" )  
+
+# Convert species column to a factor with the custom order
+data$Species <- factor(data$Species, levels = species_order)
+
 
 #set site order
 site_order <- c("S1","S2","S3","S4","S5","S6",
@@ -217,7 +230,7 @@ bulk.density.site <- filtered_data %>%
   ylim(1.0, 2.4)+
   theme_bw()+
   theme(legend.position ="none")+
-  labs(title="All Sites, All Species",
+  labs(title="All Species",
        y = "Bulk Density g/cm3"
   )
 
@@ -240,8 +253,11 @@ bulk.density.species <- filtered_data %>%
     position = position_dodge(width = 0.9))+  # Dodge means to align with the individual points
   ylim(1.0, 2.4)+
   theme_bw()+
-  theme(legend.position ="none")+
-  labs(title="All Species, All Sites",
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="All Sites",
        y = "Bulk Density g/cm3"
   )
 
@@ -807,7 +823,7 @@ grid_layout <- plot_grid(
   bulk.density.plot.S18,empty_plot,empty_plot,empty_plot,bulk.density.plot.S6,
   bulk.density.plot.S15,empty_plot,empty_plot,empty_plot,bulk.density.plot.S9,
   bulk.density.plot.S14, empty_plot,empty_plot,empty_plot,bulk.density.plot.S11,
-  empty_plot,empty_plot, bulk.density.plot.S12,empty_plot,legend_plot,
+  empty_plot,empty_plot, bulk.density.plot.S12,bulk.density.species,legend_plot,
   ncol = 5, nrow = 5
 )
 
