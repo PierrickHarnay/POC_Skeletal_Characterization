@@ -1,0 +1,20 @@
+---
+title: "Coralite_data"
+output: html_document
+date: "2025-02-17"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+
+```
+
+``` {r}
+#load coralite data
+coralite <- read_csv("MyProjects/POC_Skeletal_Characterization/Data/coralite.data", header = TRUE)
+
+```
