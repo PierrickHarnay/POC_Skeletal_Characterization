@@ -1,24 +1,24 @@
 ﻿Date,Site,Coord,Coral_ID,Morpho,Stage,Tubes_volume,Shield,Tub_location,Bag_ID,Bag_location
-20241127,Haapiti,,4571,P.grandis,adult,0.5,Yes,URI,4571,Haifa
-20241127,Haapiti,,4572,P.grandis,adult,0.5,Yes,URI,4572,Haifa
-20241127,Haapiti,,4573,P.grandis,adult,0.5,Yes,URI,4573,Haifa
-20241127,Haapiti,,4574,P.grandis,adult,0.5,Yes,URI,4574,Haifa
-20241127,Haapiti,,4575,P.grandis,adult,0.5,Yes,URI,4575,Haifa
-20241127,Haapiti,,4576,P.grandis,adult,0.5,Yes,URI,4576,Haifa
-20241127,Haapiti,,4577,P.tuahiniensis,adult,0.5,Yes,URI,4577,Haifa
-20241127,Haapiti,,4578,P.verrucosa,adult,0.5,Yes,URI,4578,Haifa
-20241127,Haapiti,,4579,P.grandis,adult,0.5,Yes,URI,4579,Haifa
-20241127,Haapiti,,4583,P.grandis,adult,0.5,Yes,URI,4583,Haifa
-20241127,Haapiti,,4584_1,P.grandis,adult,0.5,Yes,URI,4584_1,Haifa
-20241127,Haapiti,,4584_2,P.grandis,adult,0.5,Yes,URI,4584_2,Haifa
-20241127,Haapiti,,4585_1,P.grandis,adult,0.5,Yes,URI,4585_1,Haifa
-20241127,Haapiti,,4585_2,P.grandis,adult,0.5,Yes,URI,4585_2,Haifa
-20241127,Haapiti,,4598,P.grandis,adult,0.5,Yes,URI,4598,Haifa
-20241127,Haapiti,,4612,P.grandis,adult,0.5,Yes,URI,4612,Haifa
-20241127,Haapiti,,4613,P.grandis,adult,0.5,Yes,URI,4613,Haifa
-20241127,Haapiti,,4614,P.grandis,adult,0.5,Yes,URI,4614,Haifa
-20241127,Haapiti,,4615,P.meandrina,adult,0.5,Yes,URI,4615,Haifa
-20241127,Haapiti,,4622,P.grandis,adult,0.5,Yes,URI,4622,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4571,P.grandis,adult,0.5,Yes,URI,4571,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4572,P.grandis,adult,0.5,Yes,URI,4572,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4573,P.grandis,adult,0.5,Yes,URI,4573,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4574,P.grandis,adult,0.5,Yes,URI,4574,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4575,P.grandis,adult,0.5,Yes,URI,4575,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4576,P.grandis,adult,0.5,Yes,URI,4576,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4577,P.tuahiniensis,adult,0.5,Yes,URI,4577,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4578,P.verrucosa,adult,0.5,Yes,URI,4578,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4579,P.grandis,adult,0.5,Yes,URI,4579,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4583,P.grandis,adult,0.5,Yes,URI,4583,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4584_1,P.grandis,adult,0.5,Yes,URI,4584_1,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4584_2,P.grandis,adult,0.5,Yes,URI,4584_2,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4585_1,P.grandis,adult,0.5,Yes,URI,4585_1,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4585_2,P.grandis,adult,0.5,Yes,URI,4585_2,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4598,P.grandis,adult,0.5,Yes,URI,4598,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4612,P.grandis,adult,0.5,Yes,URI,4612,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4613,P.grandis,adult,0.5,Yes,URI,4613,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4614,P.grandis,adult,0.5,Yes,URI,4614,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4615,P.meandrina,adult,0.5,Yes,URI,4615,Haifa
+20241127,Haapiti,"17°33'42.0""S 149°53'08.8""W",4622,P.grandis,adult,0.5,Yes,URI,4622,Haifa
 20241127,Varari'i,,Pacuta_1,P.acuta,adult,0.5,Yes,URI,Pacuta_1,Haifa
 20241127,Varari'i,,Pacuta_2,P.acuta,adult,0.5,Yes,URI,Pacuta_2,Haifa
 20241127,Varari'i,,Pacuta_3,P.acuta,adult,0.5,Yes,URI,Pacuta_3,Haifa
