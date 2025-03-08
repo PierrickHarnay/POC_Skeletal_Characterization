@@ -25,7 +25,7 @@ library(patchwork)
 Load data and metadata
 ```{r}
 #load wax data
-wax.data <- read.csv("Data/test_bulk_density_data.csv", header=TRUE)
+wax.data <- read.csv("Data/bulk_density_data.csv", header=TRUE)
 colnames(wax.data) <- c("Sample.ID", "DW.clean.g", "DW.wax.g", "BW.wax.g", "Temperature.C", "Page.Num","Notes")
 wax.data$Sample.ID <- as.character(wax.data$Sample.ID)
 wax.data <- na.omit(wax.data)
@@ -33,12 +33,14 @@ nrow(wax.data)==length(unique(wax.data$Sample.ID))
 duplicated_names <- wax.data[duplicated(wax.data$Sample.ID), ]
 print(duplicated_names)
 
-species.id <- read.csv("Data/test_Haplotype_data.csv", header=TRUE)
+species.id <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Data/Haplotype_data.csv", header=TRUE)
 species.id$Species <- factor(species.id$Species)
 species.id$Sample.ID <- as.character(species.id$Sample.ID)
 
 metadata <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_ID_RA_list.csv", header=TRUE) %>%
-  select(c("Number", "Stage", "Timing", "Site", "Transect"))
+  select(c("Number", "Stage", "Timing", "Site", "Transect")) %>%
+  filter(Timing=="Pre_bleach")
+
 
 colnames(metadata) <- c("Sample.ID", "Stage", "Timing", "Site", "Transect")
 metadata$Sample.ID <- as.character(metadata$Sample.ID)
@@ -823,13 +825,13 @@ grid_layout <- plot_grid(
   bulk.density.plot.S18,empty_plot,empty_plot,empty_plot,bulk.density.plot.S6,
   bulk.density.plot.S15,empty_plot,empty_plot,empty_plot,bulk.density.plot.S9,
   bulk.density.plot.S14, empty_plot,empty_plot,empty_plot,bulk.density.plot.S11,
-  empty_plot,empty_plot, bulk.density.plot.S12,bulk.density.species,legend_plot,
+  bulk.density.plot.S12, empty_plot,empty_plot,bulk.density.species,legend_plot,
   ncol = 5, nrow = 5
 )
 
 final_grid_with_map <- grid_layout + 
   draw_plot(MooreaSitemap, x = 0.2, y = 0.2, width = 0.6, height = 0.6)+  
-  draw_plot(bulk.density.site, x = 0.001, y = 0.001, width = 0.36, height = 0.2)
+  draw_plot(bulk.density.site, x = 0.23, y = 0.001, width = 0.36, height = 0.2)
 final_grid_with_map 
 
 ggsave("Output/grid_layout.pdf", final_grid_with_map, width = 10, height = 10)
