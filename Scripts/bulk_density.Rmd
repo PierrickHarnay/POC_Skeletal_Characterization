@@ -17,7 +17,7 @@ library(cowplot)
 library(sf)
 library(ggspatial)
 library(ggmap)
-library(ggsn)
+#library(ggsn)
 library(patchwork)
 
 ```
@@ -33,11 +33,11 @@ nrow(wax.data)==length(unique(wax.data$Sample.ID))
 duplicated_names <- wax.data[duplicated(wax.data$Sample.ID), ]
 print(duplicated_names)
 
-species.id <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Data/Haplotype_data.csv", header=TRUE)
+species.id <- read.csv("/Users/pierrickharnay/Documents/MyProjects/Pocillopora-Lagoon-Abundance/Data/Haplotype_data.csv", header=TRUE)
 species.id$Species <- factor(species.id$Species)
 species.id$Sample.ID <- as.character(species.id$Sample.ID)
 
-metadata <- read.csv("/Users/hputnam/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_ID_RA_list.csv", header=TRUE) %>%
+metadata <- read.csv("/Users/pierrickharnay/Documents/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_ID_RA_list.csv", header=TRUE) %>%
   select(c("Number", "Stage", "Timing", "Site", "Transect")) %>%
   filter(Timing=="Pre_bleach")
 
@@ -726,6 +726,8 @@ bulk.density.plot.S18 <- site_filtered_data %>%
   labs(title="S18",
     y = "Bulk Density g/cm3"
   )
+
+ggsave("bulk.density.plot.S18",height = 16, width = 10) 
 
 bulk.density.plot.S18
 
