@@ -37,16 +37,47 @@ species.id <- read.csv("/Users/pierrickharnay/Documents/MyProjects/Pocillopora-L
 species.id$Species <- factor(species.id$Species)
 species.id$Sample.ID <- as.character(species.id$Sample.ID)
 
+# add size data
+datasize <- read.csv("/Users/pierrickharnay/Documents/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_RA_Size.csv", header = TRUE) %>% 
+  select(c("Sample.ID", "Diameter.1", "Diameter.2", "Diameter.3"))
+
+#for sample ID link with size and species ID
 metadata <- read.csv("/Users/pierrickharnay/Documents/MyProjects/Pocillopora-Lagoon-Abundance/Data/POC_ID_RA_list.csv", header=TRUE) %>%
   select(c("Number", "Stage", "Timing", "Site", "Transect")) %>%
   filter(Timing=="Pre_bleach")
-
 
 colnames(metadata) <- c("Sample.ID", "Stage", "Timing", "Site", "Transect")
 metadata$Sample.ID <- as.character(metadata$Sample.ID)
 
 data <- left_join(wax.data, species.id, by= "Sample.ID")
 data <- left_join(data, metadata, by= "Sample.ID")
+
+#for sizes 
+datasize$Sample.ID <- as.character(datasize$Sample.ID)
+
+data_1 <- left_join(data, datasize, by = "Sample.ID")
+
+#to double check with all the fusion worked correclty 
+missing_in_datasize <- data %>%
+  filter(!Sample.ID %in% datasize$Sample.ID)
+
+cat("Number of unmatched Sample.IDs in datasize:", nrow(missing_in_datasize), "\n")
+print(missing_in_datasize$Sample.ID)
+
+unmatched_in_data <- datasize %>%
+  filter(!Sample.ID %in% data$Sample.ID)
+
+cat("Number of Sample.IDs in datasize not found in data:", nrow(unmatched_in_data), "\n")
+print(unmatched_in_data$Sample.ID)
+
+# removing the data who we do not have data about sizes
+# Remove rows with any NA values
+data_1_clean <- data_1 %>%
+  drop_na()
+
+# Check how many rows remain
+cat("Number of fully matched rows with no NA:", nrow(data_1_clean), "\n")
+
 
 ```
 
@@ -76,11 +107,45 @@ boxplot(data$Bulk.Density)
 hist(data$Bulk.Density)
 
 ```
+#Calculate surface area (Volume enclosed) using the standard curve WITH THE DATASIZE ADDED SO MODIFICATION OF THE SCRIPT 
+```{r}
+
+#View the range of DW.clean.g
+range(data_1_clean$DW.clean.g)
+boxplot(data_1_clean$DW.clean.g)
+hist(data_1_clean$DW.clean.g)
+
+#View the range of DW.wax.g
+range(data_1_clean$DW.wax.g)
+boxplot(data_1_clean$DW.wax.g)
+hist(data_1_clean$DW.wax.g)
+
+str(data_1_clean)
+
+data_1_clean <- data_1_clean %>%
+  mutate(Vol.enc = DW.wax.g - BW.wax.g) %>%
+  mutate(Bulk.Density = DW.clean.g/Vol.enc)
+
+#check the range of bulk density values
+#1.44 - 2.22 reported 10.7717/peerj.3191
+range(data_1_clean$Bulk.Density)
+boxplot(data_1_clean$Bulk.Density)
+hist(data_1_clean$Bulk.Density)
+
+```
 
 Check relationship between initial weight and bulk density to see if there are artifacts of starting small (e.g., balance resolution, user artifacts)
 
 ```{r}
 data %>% 
+  ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
+  geom_point()
+
+```
+Check relationship between initial weight and bulk density to see if there are artifacts of starting small (e.g., balance resolution, user artifacts) WITH THE DATASIZE ADDED SO MODIFICATION OF THE SCRIPT 
+
+```{r}
+data_1_clean %>% 
   ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
   geom_point()
 
@@ -103,14 +168,30 @@ QC.Checks %>%
   geom_point()
 
 ```
+Check data entry for values less that 1.4 WITH THE DATASIZE ADDED SO MODIFICATION OF THE SCRIPT 
+```{r}
 
+QC.Checks <- data_1_clean %>%
+  filter(Bulk.Density <1.4, na.rm = TRUE)
+
+#checked and confirmed all entries are correct
+
+QC.Checks %>% 
+  ggplot(aes(x=DW.clean.g, y=Bulk.Density))+
+  geom_point()
+
+QC.Checks %>% 
+  ggplot(aes(x=Site, y=Bulk.Density))+
+  geom_point()
+
+```
 
 Set species colors
 ```{r}
 
 species_colors <- c("P. tuahiniensis" = "#D55E00",
                     "P. meandrina" = "pink",
-                    "P. meandrina P. grandis" = "#0072B2",
+                    "P. meandrinaP. grandis" = "#0072B2",
                     "P. verrucosa" = "#E69F00",
                     "P. grandis" = "#56B4E9",
                     "P. effusa" = "#009E73",
@@ -125,7 +206,7 @@ Plot by species and site
 
 data$Species <- factor(data$Species, levels = c("P. tuahiniensis", 
                                                 "P. meandrina", 
-                                                "P. meandrina P. grandis", 
+                                                "P. meandrinaP. grandis", 
                                                 "P. verrucosa", 
                                                 "P. grandis", 
                                                 "P. effusa", 
@@ -134,7 +215,7 @@ data$Species <- factor(data$Species, levels = c("P. tuahiniensis",
 str(data)
 
 #set species order
-species_order <- c("P. meandrina","P. meandrina P. grandis", "P. grandis",
+species_order <- c("P. meandrina","P. meandrinaP. grandis", "P. grandis",
                    "P. verrucosa","P. tuahiniensis", "P. effusa","P. acuta" )  
 
 # Convert species column to a factor with the custom order
@@ -153,6 +234,52 @@ str(data)
 
 
 bulk.density.plot.raw <- data %>%
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point() +  # Plot the data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  facet_wrap(~ Species) +  # Facet by Species
+  theme_bw()+
+  labs(title="All Raw Data",
+    x = "Species",
+    y = "Bulk Density g/cm3"
+  )  
+
+bulk.density.plot.raw
+
+```
+Plot by species and site WITH DATASIZE FILTER SO IN OUR CASE IT'S CALL DATA_1_CLEAN
+```{r}
+
+data_1_clean$Species <- factor(data_1_clean$Species, levels = c("P. tuahiniensis", 
+                                                "P. meandrina", 
+                                                "P. meandrinaP. grandis", 
+                                                "P. verrucosa", 
+                                                "P. grandis", 
+                                                "P. effusa", 
+                                                "P. acuta"))
+
+str(data_1_clean)
+
+#set species order
+species_order <- c("P. meandrina","P. meandrinaP. grandis", "P. grandis",
+                   "P. verrucosa","P. tuahiniensis", "P. effusa","P. acuta" )  
+
+# Convert species column to a factor with the custom order
+data_1_clean$Species <- factor(data_1_clean$Species, levels = species_order)
+
+
+#set site order
+site_order <- c("S1","S2","S3","S4","S5","S6",
+                "S9","S11","S12","S14","S15","S18")  
+
+# Convert Site column to a factor with the custom order
+data_1_clean$Site <- factor(data_1_clean$Site, levels = site_order)
+
+# Check the structure to confirm the changes
+str(data_1_clean)
+
+
+bulk.density.plot.raw <- data_1_clean %>%
   ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
   geom_point() +  # Plot the data points
   scale_color_manual(values = species_colors) +  # Apply the manual color scale
@@ -217,6 +344,57 @@ bulk.density.plot.outlier.removed.species <- filtered_data %>%
 #bulk.density.plot.outlier.removed.species
 
 ```
+#SAME CODE AS BEFORE BUT THIS TIME I USE THE CLEAN DATA WITH NO NA AND DATASIZE 
+```{r}
+
+#remove outliers above 2.93 and below 0
+filtered_data_clean<- data_1_clean %>%
+  filter(Bulk.Density <2.93, na.rm = TRUE) %>%
+  filter(Bulk.Density >0, na.rm = TRUE)
+
+bulk.density.plot.outlier.removed.clean <- filtered_data_clean %>%
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species)) +  # Add 'color = Species' to map colors to the Species variable
+  geom_point() +  # Plot the data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  facet_wrap(~ Species) +  # Facet by Species
+  theme_bw()+
+  labs(title="Outlier Removed",
+    x = "Species",
+    y = "Bulk Density g/cm3"
+  )  
+
+bulk.density.plot.outlier.removed.clean
+
+
+bulk.density.plot.outlier.removed.species.clean <- filtered_data_clean %>%
+  ggplot(aes(x = Site, y = Bulk.Density, color = Species, group = Species)) +  # Map color to Species
+  geom_point(position = position_dodge(width = 0.9), size = 1, alpha = 0.2) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 3,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9)  # Dodge means to align with the individual points
+  ) + 
+  geom_line(
+    stat = "summary",  # Use the summary statistics (mean) to plot the line
+    fun = "mean",  # Line connects the means
+    aes(group = Species, color = Species),  # Ensure the line connects the means of each species
+    size = 1,  # Thickness of the line
+  position = position_dodge(width = 0.9)) +
+  scale_color_manual(values = species_colors) +  # Use your manual color palette for the species
+  theme_classic() +  # Classic theme for cleaner look
+  labs(
+    title = "Outlier Removed",
+    x = "Site",
+    y = "Bulk Density g/cm²"
+  )
+
+# Display the plot
+#bulk.density.plot.outlier.removed.species
+
+```
 
 All species by site
 ```{r}
@@ -237,6 +415,28 @@ bulk.density.site <- filtered_data %>%
   )
 
 bulk.density.site
+
+```
+
+All species by site WITH CLEAN DATA (WITH SIZE DATA)
+```{r}
+bulk.density.site.clean <- filtered_data_clean %>%
+  ggplot(aes(x = Site, y = Bulk.Density)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, color="gray", alpha = 0.3) +  # Plot the individual data points
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    position = position_dodge(width = 0.9))+  # Dodge means to align with the individual points
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  theme(legend.position ="none")+
+  labs(title="All Species",
+       y = "Bulk Density g/cm3"
+  )
+
+bulk.density.site.clean
 
 ```
 
@@ -267,6 +467,32 @@ bulk.density.species
 
 ```
 
+All sites by Species WITH CLEAN DATA (WITH SIZE DATA)
+```{r}
+bulk.density.species.clean <- filtered_data_clean %>%
+  ggplot(aes(x = Species, y = Bulk.Density)) +  # Add 'color = Species' to map colors to the Species variable
+   geom_point(position = position_dodge(width = 0.9), size = 2, color="gray", alpha = 0.3) +  # Plot the individual data points
+  scale_color_manual(values = species_colors) +  # Apply the manual color scale
+  stat_summary(
+    fun = "mean",  # Compute the mean
+    geom = "point",  # Add the mean as a point
+    size = 5,  # Size of the mean points
+    shape = 18,  # Diamond shape for mean points
+    aes(color = Species),  # Make the mean points the same color as the species
+    position = position_dodge(width = 0.9))+  # Dodge means to align with the individual points
+  ylim(1.0, 2.4)+
+  theme_bw()+
+  theme(legend.position ="none",
+        axis.title.x = element_blank(), 
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_line())+
+  labs(title="All Sites",
+       y = "Bulk Density g/cm3"
+  )
+
+bulk.density.species.clean
+
+```
 
 View a single site S1
 ```{r}
@@ -346,6 +572,93 @@ bulk.density.plot.S2 <- site_filtered_data %>%
 bulk.density.plot.S2
 
 ```
+
+ploting the site 2 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S2") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S2") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s2.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S2)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s2.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S2",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s2.bulk.pdf", plot = size.s2.bulk, width = 10, height = 6, dpi = 300)
+size.s2.bulk
+
+```
+
 View a single site S3
 ```{r}
 #remove max outlier
@@ -384,6 +697,92 @@ bulk.density.plot.S3 <- site_filtered_data %>%
 bulk.density.plot.S3
 
 ```
+
+ploting the site 3 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S3") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S3") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s3.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S2)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s3.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S3",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s3.bulk.pdf", plot = size.s3.bulk, width = 10, height = 6, dpi = 300)
+size.s3.bulk
+```
+
 View a single site S4
 ```{r}
 #remove max outlier
@@ -422,6 +821,92 @@ bulk.density.plot.S4 <- site_filtered_data %>%
 bulk.density.plot.S4
 
 ```
+
+ploting the site 4 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S4") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S4") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s4.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S4)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s4.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S4",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s4.bulk.pdf", plot = size.s4.bulk, width = 10, height = 6, dpi = 300)
+size.s4.bulk
+```
+
 View a single site S5
 ```{r}
 #remove max outlier
@@ -460,6 +945,92 @@ bulk.density.plot.S5 <- site_filtered_data %>%
 bulk.density.plot.S5
 
 ```
+
+ploting the site 5 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S5") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S5") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s5.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S5)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s5.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S5",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s5.bulk.pdf", plot = size.s5.bulk, width = 10, height = 6, dpi = 300)
+size.s5.bulk
+```
+
 View a single site S6
 ```{r}
 #remove max outlier
@@ -498,6 +1069,92 @@ bulk.density.plot.S6 <- site_filtered_data %>%
 bulk.density.plot.S6
 
 ```
+
+ploting the site 6 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S6") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S6") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s6.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S6)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s6.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S6",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s6.bulk.pdf", plot = size.s6.bulk, width = 10, height = 6, dpi = 300)
+size.s6.bulk
+```
+
 View a single site S9
 ```{r}
 #remove max outlier
@@ -536,6 +1193,92 @@ bulk.density.plot.S9 <- site_filtered_data %>%
 bulk.density.plot.S9
 
 ```
+
+ploting the site 9 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S9") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S9") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s9.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S9)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s9.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S9",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s9.bulk.pdf", plot = size.s9.bulk, width = 10, height = 6, dpi = 300)
+size.s9.bulk
+```
+
 
 View a single site S11
 ```{r}
@@ -576,6 +1319,92 @@ bulk.density.plot.S11
 
 ```
 
+ploting the site 11 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S11") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S11") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s11.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S11)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s11.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S11",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s11.bulk.pdf", plot = size.s11.bulk, width = 10, height = 6, dpi = 300)
+size.s11.bulk
+```
+
+
 View a single site S12
 ```{r}
 #remove max outlier
@@ -615,6 +1444,92 @@ bulk.density.plot.S12
 
 ```
 
+ploting the site 12 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S12") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S12") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s12.bulk <-ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S12)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s12.bulk <-ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S12",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s12.bulk.pdf", plot = size.s12.bulk, width = 10, height = 6, dpi = 300)
+size.s12.bulk
+```
+
+
 View a single site S14
 ```{r}
 #remove max outlier
@@ -653,6 +1568,92 @@ bulk.density.plot.S14 <- site_filtered_data %>%
 bulk.density.plot.S14
 
 ```
+
+ploting the site 14 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S14") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S14") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s14.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s14.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S14",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s14.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
+size.s14.bulk
+```
+
 View a single site S15
 ```{r}
 #remove max outlier
@@ -691,6 +1692,92 @@ bulk.density.plot.S15 <- site_filtered_data %>%
 bulk.density.plot.S15
 
 ```
+
+ploting the site 15 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S15") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S15") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s15.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S15)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s15.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S15",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s15.bulk.pdf", plot = size.s15.bulk, width = 10, height = 6, dpi = 300)
+size.s15.bulk
+```
+
 
 View a single site S18
 ```{r}
@@ -733,6 +1820,93 @@ bulk.density.plot.S18
 
 ```
 
+ploting the site 18 to see the bulk desnity depending of their species and their sizes 
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 2 
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S18") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  filter(Site == "S18") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.s18.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class (Site S18)",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.s18.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +
+  theme_classic() +
+  labs(
+    title = "Site S18",
+    y = "Bulk Density (g/cm³)",
+    x = "Species",
+    fill = "Size Class"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(
+      color = species_colors[levels(site_filtered_data$Species)],
+      angle = 45, hjust = 1  # Optional: tilt for readability
+    )
+  )
+
+ggsave("size.s18.bulk.pdf", plot = size.s18.bulk, width = 10, height = 6, dpi = 300)
+
+size.s18.bulk
+```
+
+
 plot to pdf
 ```{r}
 # Save the plots to a PDF in one column
@@ -755,6 +1929,62 @@ grid.arrange(bulk.density.plot.S1,bulk.density.plot.S2,
 dev.off() # Close the PDF device
 
 ```
+
+Plot all the graph in one place wiith the sizes! 
+```{r}
+
+size.s2.bulk <- size.s2.bulk + theme(legend.position = "none")
+size.s3.bulk <- size.s3.bulk + theme(legend.position = "none")
+size.s4.bulk <- size.s4.bulk + theme(legend.position = "none")
+size.s5.bulk <- size.s5.bulk + theme(legend.position = "none")
+size.s6.bulk <- size.s6.bulk + theme(legend.position = "none")
+size.s9.bulk <- size.s9.bulk + theme(legend.position = "none")
+size.s11.bulk <- size.s11.bulk + theme(legend.position = "none")
+size.s12.bulk <- size.s12.bulk + theme(legend.position = "none")
+size.s14.bulk <- size.s14.bulk + theme(legend.position = "none")
+size.s15.bulk <- size.s15.bulk + theme(legend.position = "none")
+
+size.s2.bulk <- size.s2.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank()) 
+size.s3.bulk <- size.s3.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s4.bulk <- size.s4.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s5.bulk <- size.s5.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s6.bulk <- size.s6.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s9.bulk <- size.s9.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s11.bulk <- size.s11.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s12.bulk <- size.s12.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s14.bulk <- size.s14.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+
+# Save the plots to a PDF in one column
+pdf("Output/BD.sizes.per.site.pdf", height = 16, width = 10) # Set dimensions for the PDF
+grid.arrange(bulk.density.plot.raw,
+             bulk.density.plot.outlier.removed,
+             bulk.density.plot.outlier.removed.species,
+            ncol = 1) # Arrange in 1 column
+dev.off() # Close the PDF device
+
+# Save the plots to a PDF in one column
+pdf("Output/BD.sizes.per.site.pdf", height = 18, width = 12) # Set dimensions for the PDF
+grid.arrange(size.s2.bulk,size.s3.bulk,
+             size.s4.bulk,size.s5.bulk,
+             size.s6.bulk,size.s9.bulk,
+             size.s11.bulk,size.s12.bulk,
+             size.s14.bulk,size.s15.bulk,
+             size.s18.bulk,
+             ncol = 2) # Arrange in 1 column
+dev.off() # Close the PDF device
+
+ 
+```
+
 
  Make the Moorea Island Map
 ```{r }
