@@ -1930,7 +1930,7 @@ dev.off() # Close the PDF device
 
 ```
 
-Plot all the graph in one place wiith the sizes! 
+Plot all the graph in one place with the sizes! 
 ```{r}
 
 size.s2.bulk <- size.s2.bulk + theme(legend.position = "none")
