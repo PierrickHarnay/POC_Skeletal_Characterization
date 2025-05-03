@@ -605,7 +605,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s2.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s2.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -614,10 +614,10 @@ size.s2.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S2)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -631,32 +631,25 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s2.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s2.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S2",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s2.bulk.pdf", plot = size.s2.bulk, width = 10, height = 6, dpi = 300)
 size.s2.bulk
-
 ```
 
 View a single site S3
@@ -730,7 +723,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s3.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s3.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -739,10 +732,10 @@ size.s3.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S2)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -756,27 +749,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s3.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s3.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S3",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s3.bulk.pdf", plot = size.s3.bulk, width = 10, height = 6, dpi = 300)
@@ -854,7 +841,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s4.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s4.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -863,10 +850,10 @@ size.s4.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S4)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -880,27 +867,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s4.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s4.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S4",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s4.bulk.pdf", plot = size.s4.bulk, width = 10, height = 6, dpi = 300)
@@ -978,7 +959,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s5.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s5.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -989,8 +970,8 @@ size.s5.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
   labs(
     title = "Bulk Density per Species by Custom Size Class (Site S5)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1004,27 +985,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s5.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s5.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S5",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s5.bulk.pdf", plot = size.s5.bulk, width = 10, height = 6, dpi = 300)
@@ -1102,7 +1077,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s6.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s6.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1111,10 +1086,10 @@ size.s6.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S6)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1128,27 +1103,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s6.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s6.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S6",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s6.bulk.pdf", plot = size.s6.bulk, width = 10, height = 6, dpi = 300)
@@ -1226,7 +1195,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s9.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s9.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1235,10 +1204,10 @@ size.s9.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S9)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1252,27 +1221,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s9.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s9.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S9",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s9.bulk.pdf", plot = size.s9.bulk, width = 10, height = 6, dpi = 300)
@@ -1351,7 +1314,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s11.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s11.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1360,10 +1323,10 @@ size.s11.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, f
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S11)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1377,30 +1340,24 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s11.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s11.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S11",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
-ggsave("size.s11.bulk.pdf", plot = size.s11.bulk, width = 10, height = 6, dpi = 300)
+ggsave("size.s14.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
 size.s11.bulk
 ```
 
@@ -1476,7 +1433,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s12.bulk <-ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s12.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1485,10 +1442,10 @@ size.s12.bulk <-ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fi
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S12)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1502,27 +1459,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s12.bulk <-ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s12.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S12",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s12.bulk.pdf", plot = size.s12.bulk, width = 10, height = 6, dpi = 300)
@@ -1601,7 +1552,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s14.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s14.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1612,8 +1563,8 @@ size.s14.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, f
   labs(
     title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1627,27 +1578,21 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s14.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s14.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S14",
     y = "Bulk Density (g/cm³)",
     x = "Species",
-    fill = "Size Class"
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s14.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
@@ -1725,7 +1670,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s15.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s15.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1734,10 +1679,10 @@ size.s15.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, f
                                ">14cm" = "#e78ac3")) +  # Custom colors for each size class
   theme_classic() +
   labs(
-    title = "Bulk Density per Species by Custom Size Class (Site S15)",
+    title = "Bulk Density per Species by Custom Size Class (Site S14)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1751,14 +1696,11 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s15.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s15.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
     title = "Site S15",
@@ -1767,11 +1709,8 @@ size.s15.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, 
     fill = "Size Class"
   ) +
   # to change the species name color for legend on y axes
-  theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
+ theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
 ggsave("size.s15.bulk.pdf", plot = size.s15.bulk, width = 10, height = 6, dpi = 300)
@@ -1826,7 +1765,7 @@ ploting the site 18 to see the bulk desnity depending of their species and their
 filtered_data_clean <- filtered_data_clean %>%
   mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
 
-#filter for site 2 
+#filter for site 18
 site_filtered_data <- filtered_data_clean %>%
   filter(Site == "S18") %>%
   filter(!is.na(Species))
@@ -1852,7 +1791,7 @@ site_filtered_data <- site_filtered_data %>%
                           right = FALSE))  # right = FALSE makes the intervals left-inclusive
 
 # Step 3: Plot bulk density per species, colored by custom size class
-size.s18.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s18.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
   scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
@@ -1863,8 +1802,8 @@ size.s18.bulk <- ggplot(site_filtered_data, aes(x = Species, y = Bulk.Density, f
   labs(
     title = "Bulk Density per Species by Custom Size Class (Site S18)",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   )
 
 species_colors <- c(
@@ -1878,33 +1817,107 @@ species_colors <- c(
 )
   
 # the final plot 
-size.s18.bulk <- ggplot (site_filtered_data, aes(x = Species, y = Bulk.Density, fill = Size.Class)) +
+size.s18.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
   geom_boxplot(alpha = 0.7, outlier.shape = NA) +
   geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
               alpha = 0.3, size = 1) +
-  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
-                               ">2cm-5cm" = "#fc8d62", 
-                               ">5cm-14cm" = "#8da0cb", 
-                               ">14cm" = "#e78ac3")) +
+  scale_fill_manual(values = species_colors) +
   theme_classic() +
   labs(
     title = "Site S18",
     y = "Bulk Density (g/cm³)",
-    x = "Species",
-    fill = "Size Class"
+    x = "Size.Class",
+    fill = "Species"
   ) +
   # to change the species name color for legend on y axes
   theme(
-    axis.text.x = element_text(
-      color = species_colors[levels(site_filtered_data$Species)],
-      angle = 45, hjust = 1  # Optional: tilt for readability
-    )
-  )
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)) #,
+#legend.position = "bottom") 
 
 ggsave("size.s18.bulk.pdf", plot = size.s18.bulk, width = 10, height = 6, dpi = 300)
 
 size.s18.bulk
 ```
+
+```{r}
+# first we need to calculate the average size from the 3 diameters i have in my datset 
+filtered_data_clean <- filtered_data_clean %>%
+  mutate(Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE))
+
+#filter for site 18
+site_filtered_data <- filtered_data_clean %>%
+  #filter(Site == "S18") %>%
+  filter(!is.na(Species))
+
+# new try with the size categories as POC RA code and graphs
+# Step 1: Filter data for site S2 and calculate average size
+site_filtered_data <- filtered_data_clean %>%
+  #filter(Site == "S18") %>%
+  filter(!is.na(Species)) %>%
+  mutate(
+    Avg.Size = rowMeans(select(., Diameter.1, Diameter.2, Diameter.3), na.rm = TRUE)
+  )
+
+# Step 2: Create size classes using custom breaks and labels
+breaks <- c(0, 2, 5, 14, Inf)  # Adjust these values as needed
+labels <- c("0-2cm", ">2cm-5cm", ">5cm-14cm", ">14cm")  # Category labels
+
+site_filtered_data <- site_filtered_data %>%
+  mutate(Size.Class = cut(Avg.Size,
+                          breaks = breaks,
+                          include.lowest = TRUE,
+                          labels = labels,
+                          right = FALSE))  # right = FALSE makes the intervals left-inclusive
+
+# Step 3: Plot bulk density per species, colored by custom size class
+size.sall.bulk <- ggplot(site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), alpha = 0.3, size = 1) +
+  scale_fill_manual(values = c("0-2cm" = "#66c2a5", 
+                               ">2cm-5cm" = "#fc8d62", 
+                               ">5cm-14cm" = "#8da0cb", 
+                               ">14cm" = "#e78ac3")) +  # Custom colors for each size class
+  theme_classic() +
+  labs(
+    title = "Bulk Density per Species by Custom Size Class",
+    y = "Bulk Density (g/cm³)",
+    x = "Size.Class",
+    fill = "Species"
+  )
+
+species_colors <- c(
+  "P. tuahiniensis" = "#D55E00",
+  "P. meandrina" = "pink",
+  "P. meandrinaP. grandis" = "#0072B2",
+  "P. verrucosa" = "#E69F00",
+  "P. grandis" = "#56B4E9",
+  "P. effusa" = "#009E73",
+  "P. acuta" = "#e63946"
+)
+  
+# the final plot 
+size.sall.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density, fill = Species)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75), 
+              alpha = 0.3, size = 1) +
+  scale_fill_manual(values = species_colors) +
+  theme_classic() +
+  labs(
+    title = "Site Sall",
+    y = "Bulk Density (g/cm³)",
+    x = "Size.Class",
+    fill = "Species"
+  ) +
+  # to change the species name color for legend on y axes
+  theme(
+    axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)) #,
+#legend.position = "bottom") 
+
+ggsave("size.sall.bulk.pdf", plot = size.sall.bulk, width = 10, height = 6, dpi = 300)
+
+size.sall.bulk
+```
+
 
 
 plot to pdf
@@ -1943,6 +1956,7 @@ size.s11.bulk <- size.s11.bulk + theme(legend.position = "none")
 size.s12.bulk <- size.s12.bulk + theme(legend.position = "none")
 size.s14.bulk <- size.s14.bulk + theme(legend.position = "none")
 size.s15.bulk <- size.s15.bulk + theme(legend.position = "none")
+size.s18.bulk <- size.s18.bulk + theme(legend.position = "none")
 
 size.s2.bulk <- size.s2.bulk + theme(axis.text.x = element_blank(),
                                      axis.ticks.x = element_blank()) 
@@ -1962,6 +1976,12 @@ size.s12.bulk <- size.s12.bulk + theme(axis.text.x = element_blank(),
                                      axis.ticks.x = element_blank())
 size.s14.bulk <- size.s14.bulk + theme(axis.text.x = element_blank(),
                                      axis.ticks.x = element_blank())
+size.s15.bulk <- size.s15.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.s18.bulk <- size.s18.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
+size.sall.bulk <- size.sall.bulk + theme(axis.text.x = element_blank(),
+                                     axis.ticks.x = element_blank())
 
 # Save the plots to a PDF in one column
 pdf("Output/BD.sizes.per.site.pdf", height = 16, width = 10) # Set dimensions for the PDF
@@ -1978,7 +1998,7 @@ grid.arrange(size.s2.bulk,size.s3.bulk,
              size.s6.bulk,size.s9.bulk,
              size.s11.bulk,size.s12.bulk,
              size.s14.bulk,size.s15.bulk,
-             size.s18.bulk,
+             size.s18.bulk, size.sall.bulk,
              ncol = 2) # Arrange in 1 column
 dev.off() # Close the PDF device
 
