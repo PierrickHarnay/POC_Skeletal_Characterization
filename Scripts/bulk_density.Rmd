@@ -775,7 +775,8 @@ View a single site S4
 #remove max outlier
 site_filtered_data <- filtered_data %>%
   filter(Site == "S4") %>%
-  filter(Species != "NA")
+  filter(Species != "NA") %>%
+  filter(!Species %in% c("P. effusa", "P. acuta"))
 
 bulk.density.plot.S4 <- site_filtered_data %>%
   ggplot(aes(x = Species, y = Bulk.Density, color = Species, group = Species)) +  # Add 'color = Species' to map colors to the Species variable
@@ -797,7 +798,7 @@ bulk.density.plot.S4 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  theme(legend.position ="none",
+  theme(legend.position =,
         axis.title.x = element_blank(), 
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
@@ -805,6 +806,7 @@ bulk.density.plot.S4 <- site_filtered_data %>%
     y = "Bulk Density g/cm3"
   )
 
+ggsave("bulk.density.plot.S4.pdf", plot = bulk.density.plot.S4, width = 10, height = 6, dpi = 300)
 bulk.density.plot.S4
 
 ```
@@ -1486,7 +1488,8 @@ View a single site S14
 #remove max outlier
 site_filtered_data <- filtered_data %>%
   filter(Site == "S14") %>%
-  filter(Species != "NA")
+  filter(Species != "NA") %>%
+  filter(!Species %in% c("P. effusa", "P. acuta"))
 
 bulk.density.plot.S14 <- site_filtered_data %>%
   ggplot(aes(x = Species, y = Bulk.Density, color = Species, group = Species)) +  # Add 'color = Species' to map colors to the Species variable
@@ -1508,7 +1511,7 @@ bulk.density.plot.S14 <- site_filtered_data %>%
   position = position_dodge(width = 0.9)) +
   ylim(1.0, 2.4)+
   theme_bw()+
-  theme(legend.position ="none",
+  theme(legend.position =,
         axis.title.x = element_blank(), 
         axis.text.x = element_blank(),
         axis.ticks.x = element_line())+
@@ -1516,6 +1519,7 @@ bulk.density.plot.S14 <- site_filtered_data %>%
     y = "Bulk Density g/cm3"
   )
 
+ggsave("bulk.density.plot.S14.pdf", plot = bulk.density.plot.S14, width = 10, height = 6, dpi = 300)
 bulk.density.plot.S14
 
 ```
@@ -2092,3 +2096,212 @@ ggsave("Output/grid_layout.pdf", final_grid_with_map, width = 10, height = 10)
 
 
 ```
+
+combine s4 and s14 to the graph for BioAntifatgue graph 
+```{r}
+combined_data <- filtered_data %>%
+  filter(Species != "NA") %>%
+  filter(!Species %in% c("P. effusa", "P. acuta")) %>%
+  filter(Site %in% c("S4", "S14"))  # Replace "OtherSite" with your actual second site name
+
+bulk_density_combined_plot <- combined_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density, color = Site, group = Site)) +
+  
+  # Individual points
+  geom_point(position = position_dodge(width = 0.7), size = 2, alpha = 0.3) +
+  
+  # Mean points
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    aes(color = Site),
+    size = 5,
+    shape = 18,
+    position = position_dodge(width = 0.7)
+  ) +
+  
+  # Mean lines
+  geom_line(
+    stat = "summary",
+    fun = "mean",
+    aes(group = Site, color = Site),
+    size = 1,
+    position = position_dodge(width = 0.7)
+  ) +
+  
+  ylim(1.0, 2.4) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_blank(), 
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.ticks.x = element_line()
+  ) +
+  labs(
+    title = "Bulk Density by Species and Site",
+    y = "Bulk Density g/cm3",
+    color = "Site"
+  )
+
+# Plot
+bulk_density_combined_plot <- combined_data %>%
+  ggplot(aes(x = Species, y = Bulk.Density, color = Species)) +  # color by Species
+  geom_point(
+    aes(group = Site),  # group by Site for position
+    position = position_dodge(width = 0.7),
+    size = 2,
+    alpha = 0.3
+  ) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    size = 5,
+    shape = 18,
+    aes(group = Site),  # position by Site
+    position = position_dodge(width = 0.7)
+  ) +
+  geom_line(
+    stat = "summary",
+    fun = "mean",
+    aes(group = interaction(Species, Site)),  # line by Site within Species
+    size = 1,
+    position = position_dodge(width = 0.7)
+  ) +
+  scale_color_manual(values = species_colors) +  # keep species colors
+  ylim(1.0, 2.4) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.ticks.x = element_line()
+  ) +
+  labs(
+    title = "Bulk Density by Species and Site",
+    y = "Bulk Density g/cm3",
+    color = "Species"
+  )
+
+
+ggsave("bulk_density_combined_plot.pdf", plot = bulk_density_combined_plot, width = 12, height = 6, dpi = 300)
+bulk_density_combined_plot
+
+```
+Try a new combinaison for showing the graph with the species difference but also the site on the X axe
+```{r}
+# Create a new column for plotting: combines Species and Site for x-axis
+combined_data <- filtered_data %>%
+  filter(Species != "NA") %>%
+  filter(!Species %in% c("P. effusa", "P. acuta")) %>%
+  filter(Site %in% c("S4", "S14")) %>%  # Replace with actual sites
+  mutate(Species_Site = paste(Species, Site, sep = "_"))
+
+# Plot: use Species_Site as x-axis and color by Species
+bulk_density_combined_plot <- combined_data %>%
+  ggplot(aes(x = Species_Site, y = Bulk.Density, color = Species)) +
+  geom_point(
+    size = 2,
+    alpha = 0.3
+  ) +
+  stat_summary(
+    fun = "mean",
+    geom = "point",
+    size = 5,
+    shape = 18
+  ) +
+  geom_line(
+    stat = "summary",
+    fun = "mean",
+    aes(group = Species),
+    size = 1
+  ) +
+  scale_color_manual(values = species_colors) +
+  ylim(1.0, 2.4) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.ticks.x = element_line()
+  ) +
+  labs(
+    title = "Bulk Density by Species and Site",
+    y = "Bulk Density g/cm3",
+    color = "Species"
+  )
+
+combined_data <- combined_data %>%
+  mutate(
+    Species_Site = paste0(Site, "\n", Species)  # Line break for neatness
+  )
+
+ggsave("bulk_density_combined_plot.pdf", plot = bulk_density_combined_plot, width = 12, height = 6, dpi = 300)
+bulk_density_combined_plot
+
+```
+Statistic test between the two site 
+```{r}
+test_data <- filtered_data %>%
+  filter(Species != "NA") %>%
+  filter(!Species %in% c("P. effusa", "P. acuta")) %>%
+  filter(Site %in% c("S4", "S14")) %>%  # Use your actual sites
+  droplevels()
+
+anova_result <- aov(Bulk.Density ~ Species * Site, data = test_data)
+summary(anova_result)
+
+library(emmeans)
+
+# Post-hoc pairwise comparisons between species
+emmeans_species <- emmeans(anova_result, ~ Species)
+pairs(emmeans_species)
+
+```
+test if the same species are different depending of the site
+```{r}
+library(emmeans)
+
+# Run emmeans with site nested within species
+emmeans_species_site <- emmeans(anova_result, ~ Site | Species)
+pairs(emmeans_species_site)
+
+species_list <- unique(test_data$Species)
+
+for (sp in species_list) {
+  cat("\n==== Species:", sp, "====\n")
+  species_data <- test_data[test_data$Species == sp, ]
+  model <- aov(Bulk.Density ~ Site, data = species_data)
+  print(summary(model))
+}
+
+```
+Adding the p-value on the graph to show the signification 
+```{r}
+library(ggsignif)
+
+bulk_density_combined_plot + 
+  geom_signif(
+    comparisons = list(c("S14", "S4")),  # x-axis labels for the two sites
+    map_signif_level = TRUE,             # Will show *, **, ***
+    annotations = c("*"),                # Optional: you can provide specific p-values or symbols
+    y_position = 2.4,                    # Adjust height of the bracket
+    tip_length = 0.01                    # Optional tweak
+  )
+
+comparisons = list(
+  c("P. meandrina\nS14", "P. meandrina\nS4"),
+  c("P. verrucosa\nS14", "P. verrucosa\nS4"),
+  c("P. tuahiniensis\nS14", "P. tuahiniensis\nS4")
+)
+
+bulk_density_combined_plot +
+  geom_signif(
+    comparisons = comparisons,
+    annotations = c("*", "**", "**"),  # Match your p-values or use actual p text
+    y_position = c(2.35, 2.4, 2.45),   # Stack brackets higher for each
+    tip_length = 0.01
+  )
+
+
+```
+
+
+
+
