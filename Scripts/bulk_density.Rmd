@@ -2187,33 +2187,30 @@ bulk_density_combined_plot
 ```
 Try a new combinaison for showing the graph with the species difference but also the site on the X axe
 ```{r}
-# Create a new column for plotting: combines Species and Site for x-axis
-combined_data <- filtered_data %>%
-  filter(Species != "NA") %>%
-  filter(!Species %in% c("P. effusa", "P. acuta")) %>%
-  filter(Site %in% c("S4", "S14")) %>%  # Replace with actual sites
-  mutate(Species_Site = paste(Species, Site, sep = "_"))
+# Define site colors
+site_colors <- c("S4" = "#56B4E9", "S14" = "#e63946")
 
-# Plot: use Species_Site as x-axis and color by Species
-bulk_density_combined_plot <- combined_data %>%
-  ggplot(aes(x = Species_Site, y = Bulk.Density, color = Species)) +
-  geom_point(
-    size = 2,
-    alpha = 0.3
-  ) +
-  stat_summary(
-    fun = "mean",
-    geom = "point",
-    size = 5,
-    shape = 18
-  ) +
-  geom_line(
-    stat = "summary",
-    fun = "mean",
-    aes(group = Species),
-    size = 1
-  ) +
-  scale_color_manual(values = species_colors) +
+
+# Filter data: remove NA species and specific species
+combined_data <- filtered_data %>%
+  filter(!is.na(Species)) %>%
+  filter(!Species %in% c("P. effusa", "P. acuta", "P. meandrinaP. grandis")) %>%
+  filter(Site %in% c("S4", "S14"))
+
+# Get mean points per Species and Site
+mean_data <- combined_data %>%
+  group_by(Species, Site) %>%
+  summarise(mean_bd = mean(Bulk.Density, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = Site, values_from = mean_bd) %>%
+  filter(!is.na(S4) & !is.na(S14))
+
+
+# Create boxplot
+bulk_density_boxplot_1 <- ggplot(combined_data, aes(x = Species, y = Bulk.Density, fill = Site)) +
+  
+  geom_boxplot(position = position_dodge(width = 0.8), outlier.alpha = 0.2, width = 0.6) +
+  
+  scale_fill_manual(values = site_colors) +
   ylim(1.0, 2.4) +
   theme_bw() +
   theme(
@@ -2223,17 +2220,12 @@ bulk_density_combined_plot <- combined_data %>%
   ) +
   labs(
     title = "Bulk Density by Species and Site",
-    y = "Bulk Density g/cm3",
-    color = "Species"
+    y = "Bulk Density (g/cm³)",
+    fill = "Site"
   )
+bulk_density_boxplot_1
+ggsave("bulk_density_boxplot_1.pdf", plot = bulk_density_boxplot_1, width = 12, height = 6, dpi = 300)
 
-combined_data <- combined_data %>%
-  mutate(
-    Species_Site = paste0(Site, "\n", Species)  # Line break for neatness
-  )
-
-ggsave("bulk_density_combined_plot.pdf", plot = bulk_density_combined_plot, width = 12, height = 6, dpi = 300)
-bulk_density_combined_plot
 
 ```
 Statistic test between the two site 
