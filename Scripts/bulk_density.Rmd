@@ -638,7 +638,7 @@ size.s2.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S2",
+    title = "Site 2",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -756,7 +756,7 @@ size.s3.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S3",
+    title = "Site 3",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -874,7 +874,7 @@ size.s4.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S4",
+    title = "Site 4",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -992,7 +992,7 @@ size.s5.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S5",
+    title = "Site 5",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1110,7 +1110,7 @@ size.s6.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S6",
+    title = "Site 6",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1228,7 +1228,7 @@ size.s9.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Density
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S9",
+    title = "Site 9",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1347,7 +1347,7 @@ size.s11.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densit
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S11",
+    title = "Site 11",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1357,7 +1357,7 @@ scale_fill_manual(values = species_colors)  +
     axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5)
   )
 
-ggsave("size.s14.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
+ggsave("size.s11.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
 size.s11.bulk
 ```
 
@@ -1466,7 +1466,7 @@ size.s12.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densit
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S12",
+    title = "Site 12",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1585,7 +1585,7 @@ size.s14.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densit
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S14",
+    title = "Site 14",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Species"
@@ -1598,6 +1598,7 @@ scale_fill_manual(values = species_colors)  +
 ggsave("size.s14.bulk.pdf", plot = size.s14.bulk, width = 10, height = 6, dpi = 300)
 size.s14.bulk
 ```
+
 
 View a single site S15
 ```{r}
@@ -1703,7 +1704,7 @@ size.s15.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densit
 scale_fill_manual(values = species_colors)  +
   theme_classic() +
   labs(
-    title = "Site S15",
+    title = "Site 15",
     y = "Bulk Density (g/cm³)",
     x = "Species",
     fill = "Size Class"
@@ -1824,7 +1825,7 @@ size.s18.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densit
   scale_fill_manual(values = species_colors) +
   theme_classic() +
   labs(
-    title = "Site S18",
+    title = "Site 18",
     y = "Bulk Density (g/cm³)",
     x = "Size.Class",
     fill = "Species"
@@ -1903,7 +1904,7 @@ size.sall.bulk <- ggplot (site_filtered_data, aes(x = Size.Class, y = Bulk.Densi
   scale_fill_manual(values = species_colors) +
   theme_classic() +
   labs(
-    title = "Site Sall",
+    title = "All site",
     y = "Bulk Density (g/cm³)",
     x = "Size.Class",
     fill = "Species"
